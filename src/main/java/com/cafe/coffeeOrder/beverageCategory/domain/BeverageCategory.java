@@ -12,7 +12,7 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@ToString
+@ToString(callSuper = true, exclude = "beverages")
 public class BeverageCategory {
 
     @Id

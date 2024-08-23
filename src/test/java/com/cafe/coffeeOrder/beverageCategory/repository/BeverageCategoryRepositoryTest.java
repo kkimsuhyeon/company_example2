@@ -1,7 +1,5 @@
 package com.cafe.coffeeOrder.beverageCategory.repository;
 
-import com.cafe.coffeeOrder.beverage.repository.BeverageRepository;
-import com.cafe.coffeeOrder.beverage.repository.BeverageRepositoryImpl;
 import com.cafe.coffeeOrder.beverageCategory.domain.BeverageCategory;
 import com.cafe.coffeeOrder.beverageCategory.dto.SearchCategory;
 import jakarta.persistence.NoResultException;
@@ -11,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -21,7 +18,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
-@Import({JpaConfig.class})
+@Import({TestJpaConfig.class})
 @Sql(scripts = "classpath:/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class BeverageCategoryRepositoryTest {
 
@@ -97,13 +94,13 @@ class BeverageCategoryRepositoryTest {
 
         sut.deleteCategory(id);
 
-        assertThatThrownBy(() -> sut.selectCategoryById(id)).isInstanceOf(NoResultException.class);
+        assertThatThrownBy(() -> sut.selectCategoryById(id)).isInstanceOf(ConstraintViolationException.class);
     }
 
 }
 
 
-class JpaConfig {
+class TestJpaConfig {
 
     @Bean
     public BeverageCategoryRepository beverageRepository() {

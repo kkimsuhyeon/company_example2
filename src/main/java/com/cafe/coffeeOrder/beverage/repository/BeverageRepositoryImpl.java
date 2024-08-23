@@ -1,7 +1,6 @@
 package com.cafe.coffeeOrder.beverage.repository;
 
 import com.cafe.coffeeOrder.beverage.domain.Beverage;
-import com.cafe.coffeeOrder.beverageCategory.domain.BeverageCategory;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
@@ -16,13 +15,15 @@ public class BeverageRepositoryImpl implements BeverageRepository {
     EntityManager entityManager;
 
     @Override
-    public void insertBeverage(Beverage beverage) {
+    public Beverage insertBeverage(Beverage beverage) {
         entityManager.persist(beverage);
+        return beverage;
     }
 
     @Override
     public List<Beverage> selectBeverages() {
-        String query = "SELECT b FROM Beverage AS b";
+        String query = "SELECT b FROM Beverage AS b" +
+                " LEFT JOIN FETCH b.category AS bc";
 
         return entityManager.createQuery(query, Beverage.class)
                 .getResultList();
@@ -31,6 +32,7 @@ public class BeverageRepositoryImpl implements BeverageRepository {
     @Override
     public Optional<Beverage> selectBeverageById(long id) {
         String query = "SELECT b FROM Beverage AS b" +
+                " LEFT JOIN FETCH b.category AS bc" +
                 " WHERE b.id = :id";
 
         Beverage result = entityManager.createQuery(query, Beverage.class)

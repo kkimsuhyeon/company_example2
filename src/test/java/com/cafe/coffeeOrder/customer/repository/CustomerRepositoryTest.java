@@ -16,7 +16,7 @@ import static org.assertj.core.api.Assertions.*;
 
 
 @DataJpaTest
-@Import({JpaConfig.class})
+@Import({TestJpaConfig.class})
 @Sql(scripts = "classpath:/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class CustomerRepositoryTest {
 
@@ -71,7 +71,7 @@ class CustomerRepositoryTest {
 
 }
 
-class JpaConfig {
+class TestJpaConfig {
     @Bean
     public CustomerRepository customerRepository() {
         return new CustomerRepositoryImpl();

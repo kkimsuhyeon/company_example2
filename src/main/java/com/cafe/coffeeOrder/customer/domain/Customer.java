@@ -1,7 +1,11 @@
 package com.cafe.coffeeOrder.customer.domain;
 
+import com.cafe.coffeeOrder.orders.domain.Orders;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,6 +21,9 @@ public class Customer {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<Orders> orders = new ArrayList<>();
 
     private Customer(String name) {
         this.name = name;

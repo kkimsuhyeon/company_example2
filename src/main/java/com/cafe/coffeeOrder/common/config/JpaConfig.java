@@ -1,4 +1,4 @@
-package com.cafe.coffeeOrder.config;
+package com.cafe.coffeeOrder.common.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;

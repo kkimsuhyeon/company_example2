@@ -18,7 +18,7 @@ public class Payment extends AuditingFields {
     @Column(name = "payment_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "payment_status")
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 

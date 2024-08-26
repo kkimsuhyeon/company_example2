@@ -3,9 +3,12 @@ package com.cafe.coffeeOrder.beverage.service;
 import com.cafe.coffeeOrder.beverage.domain.Beverage;
 import com.cafe.coffeeOrder.beverage.dto.RequestCreateBeverage;
 import com.cafe.coffeeOrder.beverage.dto.ResponseBeverageItem;
+import com.cafe.coffeeOrder.beverage.exception.BeverageException;
 import com.cafe.coffeeOrder.beverage.repository.BeverageRepository;
 import com.cafe.coffeeOrder.beverageCategory.domain.BeverageCategory;
+import com.cafe.coffeeOrder.beverageCategory.exception.BeverageCategoryException;
 import com.cafe.coffeeOrder.beverageCategory.repository.BeverageCategoryRepository;
+import com.cafe.coffeeOrder.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +41,7 @@ public class BeverageServiceImpl implements BeverageService {
 
         return result
                 .map(ResponseBeverageItem::from)
-                .orElseThrow(() -> new IllegalArgumentException("해당 음료 존재하지 않음"));
+                .orElseThrow(() -> new CustomException(BeverageException.NOT_FOUND));
     }
 
     @Override
@@ -57,10 +60,12 @@ public class BeverageServiceImpl implements BeverageService {
     @Transactional
     public ResponseBeverageItem settingCategory(long beverageId, long categoryId) {
         Optional<Beverage> result = beverageRepository.selectBeverageById(beverageId);
-        Beverage beverage = result.orElseThrow(() -> new IllegalArgumentException("해당 음료 존재하지 않음"));
+        Beverage beverage = result.orElseThrow(() -> new CustomException(BeverageException.NOT_FOUND));
 
         Optional<BeverageCategory> category = beverageCategoryRepository.selectCategoryById(categoryId);
-        category.ifPresent(beverage::setCategory);
+        category.ifPresentOrElse(beverage::setCategory, () -> {
+            throw new CustomException(BeverageCategoryException.NOT_FOUND);
+        });
 
         return ResponseBeverageItem.from(beverage);
     }

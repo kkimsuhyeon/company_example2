@@ -24,7 +24,7 @@ public class Orders extends AuditingFields {
     @Column(name = "orders_id")
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "order_status")
     @Enumerated(EnumType.STRING)
     private OrdersStatus status;
 

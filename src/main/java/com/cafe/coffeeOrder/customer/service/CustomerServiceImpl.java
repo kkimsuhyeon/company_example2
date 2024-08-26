@@ -3,7 +3,9 @@ package com.cafe.coffeeOrder.customer.service;
 import com.cafe.coffeeOrder.customer.domain.Customer;
 import com.cafe.coffeeOrder.customer.dto.RequestCreateCustomer;
 import com.cafe.coffeeOrder.customer.dto.ResponseCustomerItem;
+import com.cafe.coffeeOrder.customer.exception.CustomerException;
 import com.cafe.coffeeOrder.customer.repository.CustomerRepository;
+import com.cafe.coffeeOrder.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +25,7 @@ public class CustomerServiceImpl implements CustomerService {
     public ResponseCustomerItem getCustomer(long id) {
         return customerRepository.selectCustomerById(id)
                 .map(ResponseCustomerItem::fromEntity)
-                .orElseThrow(() -> new IllegalArgumentException("해당 유저 존재하지 않음"));
-
+                .orElseThrow(() -> new CustomException(CustomerException.NOT_FOUND));
     }
 
     @Override

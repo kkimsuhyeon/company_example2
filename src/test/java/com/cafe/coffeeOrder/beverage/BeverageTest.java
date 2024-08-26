@@ -3,10 +3,12 @@ package com.cafe.coffeeOrder.beverage;
 import com.cafe.coffeeOrder.beverage.dto.RequestCreateBeverage;
 import com.cafe.coffeeOrder.beverage.dto.ResponseBeverageItem;
 import com.cafe.coffeeOrder.beverage.service.BeverageService;
+import com.cafe.coffeeOrder.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
@@ -74,11 +76,30 @@ class BeverageTest {
     }
 
     @Test
+    @DisplayName("존재하지 않는 음료 조회")
+    void get_beverage_by_id_fail() {
+        assertThatThrownBy(() -> sut.getBeverage(100L))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
+                .hasFieldOrPropertyWithValue("errorCode", "BVG-001");
+    }
+
+    @Test
     @DisplayName("음료 카테고리 설정")
     void set_beverage_category() {
         ResponseBeverageItem actual = sut.settingCategory(1L, 2L);
 
         assertThat(actual).hasFieldOrPropertyWithValue("id", 1L).hasFieldOrPropertyWithValue("name", "beverage1");
         assertThat(actual.getCategory()).hasFieldOrPropertyWithValue("id", 2L).hasFieldOrPropertyWithValue("name", "category2");
+    }
+
+    @Test
+    @DisplayName("음료 카테고리 설정 시, 카테고리가 존재 하지 않음")
+    void set_beverage_category_fail() {
+        assertThatThrownBy(() -> sut.settingCategory(1L, 100L))
+                .isInstanceOf(CustomException.class)
+                .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
+                .hasFieldOrPropertyWithValue("errorCode", "CTG-001");
+
     }
 }

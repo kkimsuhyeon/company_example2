@@ -26,11 +26,11 @@ public class BeverageCategoryRepositoryImpl implements BeverageCategoryRepositor
         String query = "SELECT bc FROM BeverageCategory AS bc" +
                 " WHERE bc.id = :id";
 
-        BeverageCategory result = entityManager.createQuery(query, BeverageCategory.class)
+        List<BeverageCategory> result = entityManager.createQuery(query, BeverageCategory.class)
                 .setParameter("id", id)
-                .getSingleResult();
+                .getResultList();
 
-        return Optional.ofNullable(result);
+        return result.stream().findFirst();
     }
 
     @Override

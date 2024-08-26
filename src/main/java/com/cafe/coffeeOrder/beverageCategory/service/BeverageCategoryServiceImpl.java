@@ -1,8 +1,11 @@
 package com.cafe.coffeeOrder.beverageCategory.service;
 
+import com.cafe.coffeeOrder.beverageCategory.domain.BeverageCategory;
 import com.cafe.coffeeOrder.beverageCategory.dto.RequestCreateBeverageCategory;
 import com.cafe.coffeeOrder.beverageCategory.dto.ResponseBeverageCategoryItem;
+import com.cafe.coffeeOrder.beverageCategory.exception.BeverageCategoryException;
 import com.cafe.coffeeOrder.beverageCategory.repository.BeverageCategoryRepository;
+import com.cafe.coffeeOrder.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +25,13 @@ public class BeverageCategoryServiceImpl implements BeverageCategoryService {
     public ResponseBeverageCategoryItem getBeverageCategory(long id) {
         return beverageCategoryRepository.selectCategoryById(id)
                 .map(ResponseBeverageCategoryItem::fromEntity)
-                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리 존재하지 않음"));
+                .orElseThrow(() -> new CustomException(BeverageCategoryException.NOT_FOUND));
     }
 
     @Override
     @Transactional
     public ResponseBeverageCategoryItem createBeverageCategory(RequestCreateBeverageCategory request) {
-        return null;
+        BeverageCategory result = beverageCategoryRepository.insertCategory(request.toEntity());
+        return ResponseBeverageCategoryItem.fromEntity(result);
     }
 }

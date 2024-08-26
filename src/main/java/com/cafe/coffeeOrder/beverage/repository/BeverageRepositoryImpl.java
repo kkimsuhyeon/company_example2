@@ -35,10 +35,10 @@ public class BeverageRepositoryImpl implements BeverageRepository {
                 " LEFT JOIN FETCH b.category AS bc" +
                 " WHERE b.id = :id";
 
-        Beverage result = entityManager.createQuery(query, Beverage.class)
+        List<Beverage> result = entityManager.createQuery(query, Beverage.class)
                 .setParameter("id", id)
-                .getSingleResult();
+                .getResultList();
 
-        return Optional.ofNullable(result);
+        return result.stream().findFirst();
     }
 }

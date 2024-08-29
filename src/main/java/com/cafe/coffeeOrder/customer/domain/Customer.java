@@ -1,6 +1,6 @@
 package com.cafe.coffeeOrder.customer.domain;
 
-import com.cafe.coffeeOrder.orders.domain.Orders;
+import com.cafe.coffeeOrder.receipt.domain.Receipt;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@ToString
+@ToString(exclude = {"receipts"})
 public class Customer {
 
     @Id
@@ -23,7 +23,7 @@ public class Customer {
     private String name;
 
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
-    private List<Orders> orders = new ArrayList<>();
+    private List<Receipt> receipts = new ArrayList<>();
 
     private Customer(String name) {
         this.name = name;

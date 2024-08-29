@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @Sql(scripts = "classpath:/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
-public class CustomerTest {
+class CustomerTest {
 
     @Autowired
     CustomerService sut;

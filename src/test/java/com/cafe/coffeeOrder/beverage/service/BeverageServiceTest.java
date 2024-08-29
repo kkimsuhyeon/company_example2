@@ -28,9 +28,9 @@ class BeverageServiceTest {
     @Test
     @DisplayName("음료 전체 조회")
     void get_beverages() {
-        Beverage beverage1 = Beverage.of("name1");
-        Beverage beverage2 = Beverage.of("name2");
-        Beverage beverage3 = Beverage.of("name3");
+        Beverage beverage1 = Beverage.of("name1", 3000);
+        Beverage beverage2 = Beverage.of("name2", 4000);
+        Beverage beverage3 = Beverage.of("name3", 5000);
 
         given(beverageRepository.selectBeverages()).willReturn(List.of(beverage1, beverage2, beverage3));
 

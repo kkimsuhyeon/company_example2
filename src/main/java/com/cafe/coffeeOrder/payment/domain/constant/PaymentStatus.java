@@ -1,5 +1,6 @@
 package com.cafe.coffeeOrder.payment.domain.constant;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 public enum PaymentStatus {
@@ -12,4 +13,5 @@ public enum PaymentStatus {
     PaymentStatus(String description) {
         this.description = description;
     }
+
 }

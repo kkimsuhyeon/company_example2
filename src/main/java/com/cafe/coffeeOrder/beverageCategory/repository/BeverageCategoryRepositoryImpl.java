@@ -30,7 +30,7 @@ public class BeverageCategoryRepositoryImpl implements BeverageCategoryRepositor
                 .setParameter("id", id)
                 .getResultList();
 
-        return result.stream().findFirst();
+        return result.stream().findAny();
     }
 
     @Override

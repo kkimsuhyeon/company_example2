@@ -9,7 +9,7 @@ public interface BeverageService {
 
     public List<ResponseBeverageItem> getBeverages();
 
-    public ResponseBeverageItem getBeverage(long id);
+    public ResponseBeverageItem getBeverage(Long id);
 
     public ResponseBeverageItem createBeverage(RequestCreateBeverage request);
 

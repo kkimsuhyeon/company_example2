@@ -1,6 +1,7 @@
 package com.cafe.coffeeOrder.payment.repository;
 
 import com.cafe.coffeeOrder.payment.domain.Payment;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 

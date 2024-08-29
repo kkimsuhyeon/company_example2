@@ -1,15 +1,14 @@
 package com.cafe.coffeeOrder.common.dto;
 
 import com.cafe.coffeeOrder.common.exception.CustomException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-
+@Getter
 @ToString
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApiResponse<T> {
 
     private T data;

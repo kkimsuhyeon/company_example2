@@ -1,7 +1,9 @@
 package com.cafe.coffeeOrder.payment.domain;
 
-import com.cafe.coffeeOrder.orders.domain.Orders;
-import com.cafe.coffeeOrder.orders.domain.constant.AuditingFields;
+import com.cafe.coffeeOrder.payment.domain.constant.PaymentMethod;
+import com.cafe.coffeeOrder.purchase.domain.Purchase;
+import com.cafe.coffeeOrder.purchase.domain.constant.AuditingFields;
+import com.cafe.coffeeOrder.purchase.domain.constant.PurchaseStatus;
 import com.cafe.coffeeOrder.payment.domain.constant.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@ToString(callSuper = true, exclude = "orders")
+@ToString(callSuper = true, exclude = "purchase")
 public class Payment extends AuditingFields {
 
     @Id
@@ -22,19 +24,33 @@ public class Payment extends AuditingFields {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod method;
+
+    @Column(nullable = false)
+    private int price;
+
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private Orders orders;
+    @JoinColumn(name = "purchase_id")
+    private Purchase purchase;
 
-    private Payment(Orders orders, PaymentStatus status) {
-        this.orders = orders;
+    private Payment(Purchase purchase, int price, PaymentMethod method, PaymentStatus status) {
+        this.purchase = purchase;
+        this.method = method;
+        this.price = price;
+        setStatus(status);
+        purchase.addPayment(this);
+    }
+
+    private void setStatus(PaymentStatus status) {
         this.status = status;
-        orders.setPayment(this);
+        if (status.equals(PaymentStatus.SUCCESS)) {
+            this.purchase.success();
+        }
     }
 
-    public static Payment of(Orders orders, PaymentStatus status) {
-        return new Payment(orders, status);
+    public static Payment of(Purchase purchase, int price, PaymentMethod method, PaymentStatus status) {
+        return new Payment(purchase, price, method, status);
     }
-
-
 }

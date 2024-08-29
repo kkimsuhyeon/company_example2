@@ -9,8 +9,9 @@ import lombok.*;
 public class ResponseBeverage {
     private long id;
     private String name;
+    private int price;
 
     public static ResponseBeverage fromEntity(Beverage entity) {
-        return new ResponseBeverage(entity.getId(), entity.getName());
+        return new ResponseBeverage(entity.getId(), entity.getName(), entity.getPrice());
     }
 }

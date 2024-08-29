@@ -15,9 +15,9 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 
     @Override
     public Optional<Payment> selectPaymentById(long id) {
-        String query = "SELECT p FROM Payment AS p" +
-                " INNER JOIN FETCH p.orders AS o" +
-                " WHERE p.id = :id";
+        String query = "SELECT pay FROM Payment AS pay" +
+                " JOIN FETCH pay.purchase AS purchase" +
+                " WHERE pay.id = :id";
 
         Payment result = entityManager.createQuery(query, Payment.class)
                 .setParameter("id", id)

@@ -1,15 +1,18 @@
 package com.cafe.coffeeOrder.payment;
 
-import com.cafe.coffeeOrder.orders.domain.constant.OrdersStatus;
+import com.cafe.coffeeOrder.payment.domain.constant.PaymentMethod;
+import com.cafe.coffeeOrder.purchase.domain.constant.PurchaseStatus;
 import com.cafe.coffeeOrder.payment.domain.constant.PaymentStatus;
-import com.cafe.coffeeOrder.payment.dto.RequestCreatePayment;
-import com.cafe.coffeeOrder.payment.dto.ResponsePaymentWithOrder;
+import com.cafe.coffeeOrder.payment.dto.RequestRegistPayment;
+import com.cafe.coffeeOrder.payment.dto.ResponsePaymentWithPurchase;
 import com.cafe.coffeeOrder.payment.service.PaymentService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -25,64 +28,60 @@ class PaymentTest {
     void get_payment_by_id() {
         long id = 1L;
 
-        ResponsePaymentWithOrder actual = sut.getPayment(id);
+        ResponsePaymentWithPurchase actual = sut.getPayment(id);
 
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", id)
-                .hasFieldOrPropertyWithValue("status", PaymentStatus.SUCCESS);
-        assertThat(actual.getOrders())
+                .hasFieldOrPropertyWithValue("status", PaymentStatus.SUCCESS)
+                .hasFieldOrPropertyWithValue("price", 3000);
+        assertThat(actual.getPurchase())
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("id", 1L)
-                .hasFieldOrPropertyWithValue("status", OrdersStatus.SUCCESS);
-    }
-
-    @Test
-    @DisplayName("결제 성공")
-    void success_payment() {
-        ResponsePaymentWithOrder actual = sut.successPayment(5L);
-
-        assertThat(actual).hasFieldOrPropertyWithValue("id", 5L)
-                .hasFieldOrPropertyWithValue("status", PaymentStatus.SUCCESS);
-        assertThat(actual.getOrders())
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("id", 5L)
-                .hasFieldOrPropertyWithValue("status", OrdersStatus.SUCCESS);
-    }
-
-    @Test
-    @DisplayName("결제 실패")
-    void fail_payment() {
-        ResponsePaymentWithOrder actual = sut.failPayment(5L);
-
-        assertThat(actual).hasFieldOrPropertyWithValue("id", 5L)
-                .hasFieldOrPropertyWithValue("status", PaymentStatus.FAIL);
-        assertThat(actual.getOrders())
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("id", 5L)
-                .hasFieldOrPropertyWithValue("status", OrdersStatus.WAIT);
+                .hasFieldOrPropertyWithValue("status", PurchaseStatus.SUCCESS);
     }
 
     @Test
     @DisplayName("결제 내역 생성")
-    void create_payment() {
-        RequestCreatePayment requestSuccess = RequestCreatePayment.builder().orderId(5L).status(PaymentStatus.SUCCESS).build();
-        RequestCreatePayment requestFail = RequestCreatePayment.builder().orderId(6L).status(PaymentStatus.FAIL).build();
+    void regist_payment() {
+        RequestRegistPayment requestFail = RequestRegistPayment.of(11L, 3000, PaymentMethod.CARD, PaymentStatus.FAIL);
+        RequestRegistPayment requestSuccess = RequestRegistPayment.of(11L, 1000, PaymentMethod.CARD, PaymentStatus.SUCCESS);
 
-        ResponsePaymentWithOrder actualSuccess = sut.createPayment(requestSuccess);
-        ResponsePaymentWithOrder actualFail = sut.createPayment(requestFail);
+        ResponsePaymentWithPurchase actualFail = sut.registPayment(requestFail);
+        ResponsePaymentWithPurchase actualSuccess = sut.registPayment(requestSuccess);
 
-        assertThat(actualSuccess).hasFieldOrPropertyWithValue("id", 5L)
-                .hasFieldOrPropertyWithValue("status", PaymentStatus.SUCCESS);
-        assertThat(actualSuccess.getOrders())
+        assertThat(actualFail)
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("id", 5L)
-                .hasFieldOrPropertyWithValue("status", OrdersStatus.SUCCESS);
-
-        assertThat(actualFail).hasFieldOrPropertyWithValue("id", 6L)
+                .hasFieldOrPropertyWithValue("price", 3000)
                 .hasFieldOrPropertyWithValue("status", PaymentStatus.FAIL);
-        assertThat(actualFail.getOrders())
+
+        assertThat(actualSuccess)
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("id", 6L)
-                .hasFieldOrPropertyWithValue("status", OrdersStatus.WAIT);
+                .hasFieldOrPropertyWithValue("price", 1000)
+                .hasFieldOrPropertyWithValue("status", PaymentStatus.SUCCESS);
     }
+
+    @Test
+    @DisplayName("결제 내역 여러개 생성")
+    void regist_multi_payment() {
+        RequestRegistPayment requestFail = RequestRegistPayment.of(11L, 3000, PaymentMethod.CARD, PaymentStatus.FAIL);
+        RequestRegistPayment requestSuccess = RequestRegistPayment.of(11L, 1000, PaymentMethod.CARD, PaymentStatus.SUCCESS);
+        List<RequestRegistPayment> requests = List.of(requestFail, requestSuccess);
+
+        List<ResponsePaymentWithPurchase> actual = sut.registMultiPayment(requests);
+
+        assertThat(actual).hasSize(2);
+        assertThat(actual.get(0))
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("id", 5L)
+                .hasFieldOrPropertyWithValue("price", 3000)
+                .hasFieldOrPropertyWithValue("status", PaymentStatus.FAIL);
+        assertThat(actual.get(1))
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("id", 6L)
+                .hasFieldOrPropertyWithValue("price", 1000)
+                .hasFieldOrPropertyWithValue("status", PaymentStatus.SUCCESS);
+    }
+
 }

@@ -19,6 +19,8 @@ import static org.assertj.core.api.Assertions.*;
 @Sql(scripts = "classpath:/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
 class BeverageRepositoryTest {
 
+    // 에러 나오는 테스트 추가 ( status 바뀌는 경우 )
+
     @Autowired
     BeverageRepository sut;
 
@@ -27,21 +29,33 @@ class BeverageRepositoryTest {
     void insert_beverage() {
         long newId = 5L;
         String newBeverageName = "new beverage";
-        Beverage newBeverage = Beverage.of("new beverage");
+        int price = 3000;
+        Beverage newBeverage = Beverage.of(newBeverageName, price);
 
         Beverage actual = sut.insertBeverage(newBeverage);
 
         assertThat(actual)
                 .hasFieldOrPropertyWithValue("id", newId)
+                .hasFieldOrPropertyWithValue("price", price)
                 .hasFieldOrPropertyWithValue("name", newBeverageName);
     }
 
     @Test
     @DisplayName("음료 추가 시, 이름 누락")
     void insert_beverage_no_name() {
-        Beverage newBeverage = Beverage.of(null);
+        Beverage newBeverage = Beverage.of(null, 3000);
 
-        assertThatThrownBy(() -> sut.insertBeverage(newBeverage)).isInstanceOf(ConstraintViolationException.class);
+        assertThatThrownBy(() -> sut.insertBeverage(newBeverage))
+                .isInstanceOf(ConstraintViolationException.class);
+    }
+
+    @Test
+    @DisplayName("음료 추가 시, 가격 누락")
+    void insert_beverage_no_price() {
+        Beverage newBeverage = Beverage.of("null", null);
+
+        assertThatThrownBy(() -> sut.insertBeverage(newBeverage))
+                .isInstanceOf(ConstraintViolationException.class);
     }
 
     @Test
@@ -50,7 +64,14 @@ class BeverageRepositoryTest {
         List<Beverage> actual = sut.selectBeverages();
 
         assertThat(actual).hasSize(4);
-        assertThat(actual.get(2).getCategory()).hasFieldOrPropertyWithValue("id", 1L);
+
+        assertThat(actual.get(2))
+                .isNotNull()
+                .hasFieldOrPropertyWithValue("id", 3L)
+                .hasFieldOrPropertyWithValue("price", 2000);
+
+        assertThat(actual.get(2).getCategory())
+                .hasFieldOrPropertyWithValue("id", 1L);
     }
 
     @Test
@@ -58,7 +79,9 @@ class BeverageRepositoryTest {
     void select_beverage_by_id() {
         Beverage actual = sut.selectBeverageById(3L).get();
 
-        assertThat(actual).hasFieldOrPropertyWithValue("name", "beverage3");
+        assertThat(actual).hasFieldOrPropertyWithValue("name", "beverage3")
+                .hasFieldOrPropertyWithValue("price", 2000);
+
         assertThat(actual.getCategory())
                 .hasFieldOrPropertyWithValue("id", 1L)
                 .hasFieldOrPropertyWithValue("name", "category1");

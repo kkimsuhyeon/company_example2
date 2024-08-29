@@ -62,7 +62,9 @@ class BeverageCategoryRepositoryTest {
     void select_category_by_id_fail() {
         long id = 100L;
 
-        assertThatThrownBy(() -> sut.selectCategoryById(id)).isInstanceOf(NoResultException.class);
+        Optional<BeverageCategory> actual = sut.selectCategoryById(id);
+
+        assertThat(actual).isEmpty();
     }
 
     @Test
@@ -90,11 +92,12 @@ class BeverageCategoryRepositoryTest {
     @Test
     @DisplayName("음료 카테고리 삭제")
     void delete_category() {
-        long id = 1L;
+        long id = 6L;
 
         sut.deleteCategory(id);
+        Optional<BeverageCategory> actual = sut.selectCategoryById(id);
 
-        assertThatThrownBy(() -> sut.selectCategoryById(id)).isInstanceOf(ConstraintViolationException.class);
+        assertThat(actual).isEmpty();
     }
 
 }

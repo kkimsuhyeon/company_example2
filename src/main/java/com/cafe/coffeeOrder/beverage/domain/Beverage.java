@@ -7,6 +7,7 @@ import lombok.*;
 import java.util.Objects;
 
 @Entity
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -21,16 +22,30 @@ public class Beverage {
     @Column(nullable = false)
     private String name;
 
+    // 금액 추가
+    @Column(nullable = false)
+    private Integer price;
+
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "beverage_category_id")
     private BeverageCategory category;
 
-    private Beverage(String name) {
+    private Beverage(String name, Integer price) {
         this.name = name;
+        this.price = price;
     }
 
-    public static Beverage of(String name) {
-        return new Beverage(name);
+    private Beverage(String name, Integer price, BeverageCategory category) {
+        this(name, price);
+        setCategory(category);
+    }
+
+    public static Beverage of(String name, Integer price) {
+        return new Beverage(name, price);
+    }
+
+    public static Beverage of(String name, Integer price, BeverageCategory category) {
+        return new Beverage(name, price, category);
     }
 
     public void setCategory(BeverageCategory category) {
@@ -38,17 +53,5 @@ public class Beverage {
         if (!category.getBeverages().contains(this)) {
             category.addBeverage(this);
         }
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Beverage beverage)) return false;
-        return Objects.equals(id, beverage.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
     }
 }

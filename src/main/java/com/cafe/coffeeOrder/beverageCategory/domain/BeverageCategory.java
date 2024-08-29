@@ -4,15 +4,13 @@ import com.cafe.coffeeOrder.beverage.domain.Beverage;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-@ToString(callSuper = true, exclude = "beverages")
+@ToString(exclude = "beverages")
 public class BeverageCategory {
 
     @Id
@@ -24,7 +22,7 @@ public class BeverageCategory {
     private String name;
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
-    private Set<Beverage> beverages = new HashSet<>();
+    private List<Beverage> beverages = new ArrayList<>();
 
     private BeverageCategory(String name) {
         this.name = name;

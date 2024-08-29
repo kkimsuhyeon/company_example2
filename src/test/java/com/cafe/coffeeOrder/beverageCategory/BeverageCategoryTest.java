@@ -38,7 +38,7 @@ class BeverageCategoryTest {
         assertThatThrownBy(() -> sut.getBeverageCategory(100L))
                 .isInstanceOf(CustomException.class)
                 .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
-                .hasFieldOrPropertyWithValue("errorCode", "CTG-001");
+                .hasFieldOrPropertyWithValue("errorCode", "CATEGORY-001");
     }
 
     @Test

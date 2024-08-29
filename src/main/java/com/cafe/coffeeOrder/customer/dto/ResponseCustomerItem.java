@@ -1,7 +1,7 @@
 package com.cafe.coffeeOrder.customer.dto;
 
 import com.cafe.coffeeOrder.customer.domain.Customer;
-import com.cafe.coffeeOrder.orders.dto.ResponseOrders;
+import com.cafe.coffeeOrder.receipt.dto.ResponseReceipt;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,13 +18,13 @@ public class ResponseCustomerItem {
 
     private String name;
 
-    private List<ResponseOrders> orders;
+    private List<ResponseReceipt> receipts;
 
     public static ResponseCustomerItem fromEntity(Customer entity) {
         return new ResponseCustomerItem(
                 entity.getId(),
                 entity.getName(),
-                entity.getOrders().stream().map(ResponseOrders::fromEntity).toList()
+                entity.getReceipts().stream().map(ResponseReceipt::fromEntity).toList()
         );
     }
 

@@ -8,6 +8,7 @@ import com.cafe.coffeeOrder.beverage.repository.BeverageRepository;
 import com.cafe.coffeeOrder.beverageCategory.domain.BeverageCategory;
 import com.cafe.coffeeOrder.beverageCategory.exception.BeverageCategoryException;
 import com.cafe.coffeeOrder.beverageCategory.repository.BeverageCategoryRepository;
+import com.cafe.coffeeOrder.common.annotation.Trace;
 import com.cafe.coffeeOrder.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,14 @@ public class BeverageServiceImpl implements BeverageService {
     }
 
     @Override
+    @Trace
     public List<ResponseBeverageItem> getBeverages() {
         List<Beverage> beverages = beverageRepository.selectBeverages();
         return beverages.stream().map(ResponseBeverageItem::from).toList();
     }
 
     @Override
-    public ResponseBeverageItem getBeverage(long id) {
+    public ResponseBeverageItem getBeverage(Long id) {
         Optional<Beverage> result = beverageRepository.selectBeverageById(id);
 
         return result
@@ -48,9 +50,9 @@ public class BeverageServiceImpl implements BeverageService {
     @Transactional
     public ResponseBeverageItem createBeverage(RequestCreateBeverage request) {
         Beverage result = beverageRepository.insertBeverage(request.toEntity());
+
         if (request.getCategoryId() != 0L) {
-            Optional<BeverageCategory> category = beverageCategoryRepository.selectCategoryById(request.getCategoryId());
-            category.ifPresent(result::setCategory);
+            beverageCategoryRepository.selectCategoryById(request.getCategoryId()).ifPresent(result::setCategory);
         }
 
         return ResponseBeverageItem.from(result);

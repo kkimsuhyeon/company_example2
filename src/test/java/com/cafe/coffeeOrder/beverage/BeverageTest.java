@@ -3,11 +3,13 @@ package com.cafe.coffeeOrder.beverage;
 import com.cafe.coffeeOrder.beverage.dto.RequestCreateBeverage;
 import com.cafe.coffeeOrder.beverage.dto.ResponseBeverageItem;
 import com.cafe.coffeeOrder.beverage.service.BeverageService;
+import com.cafe.coffeeOrder.common.aspect.TraceAspect;
 import com.cafe.coffeeOrder.common.exception.CustomException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.context.jdbc.Sql;
 
@@ -18,6 +20,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Sql(scripts = "classpath:/testData.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_CLASS)
+@Import(TraceAspect.class)
 class BeverageTest {
 
     @Autowired
@@ -26,7 +29,7 @@ class BeverageTest {
     @Test
     @DisplayName("음료 생성, 카테고리는 없음")
     void create_beverage_no_category() {
-        RequestCreateBeverage request = RequestCreateBeverage.builder().name("test").build();
+        RequestCreateBeverage request = new RequestCreateBeverage.Builder("test", 3000).build();
 
         ResponseBeverageItem actual = sut.createBeverage(request);
 
@@ -40,7 +43,7 @@ class BeverageTest {
     @Test
     @DisplayName("음료 생성, 카테고리도 함께")
     void create_beverage_with_category() {
-        RequestCreateBeverage request = RequestCreateBeverage.builder().name("test").categoryId(1L).build();
+        RequestCreateBeverage request = new RequestCreateBeverage.Builder("test", 3000).categoryId(1L).build();
 
         ResponseBeverageItem actual = sut.createBeverage(request);
 
@@ -81,7 +84,7 @@ class BeverageTest {
         assertThatThrownBy(() -> sut.getBeverage(100L))
                 .isInstanceOf(CustomException.class)
                 .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
-                .hasFieldOrPropertyWithValue("errorCode", "BVG-001");
+                .hasFieldOrPropertyWithValue("errorCode", "BEVERAGE-001");
     }
 
     @Test
@@ -99,7 +102,7 @@ class BeverageTest {
         assertThatThrownBy(() -> sut.settingCategory(1L, 100L))
                 .isInstanceOf(CustomException.class)
                 .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST)
-                .hasFieldOrPropertyWithValue("errorCode", "CTG-001");
+                .hasFieldOrPropertyWithValue("errorCode", "CATEGORY-001");
 
     }
 }

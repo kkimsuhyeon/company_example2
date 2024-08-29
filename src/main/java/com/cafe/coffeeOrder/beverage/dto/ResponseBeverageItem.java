@@ -14,15 +14,17 @@ import lombok.ToString;
 public class ResponseBeverageItem {
     private long id;
     private String name;
+    private int price;
     private ResponseBeverageCategory category;
 
     public static ResponseBeverageItem from(Beverage entity) {
         if (entity.getCategory() == null) {
-            return new ResponseBeverageItem(entity.getId(), entity.getName(), null);
+            return new ResponseBeverageItem(entity.getId(), entity.getName(), entity.getPrice(), null);
         } else {
             return new ResponseBeverageItem(
                     entity.getId(),
                     entity.getName(),
+                    entity.getPrice(),
                     ResponseBeverageCategory.from(entity.getCategory()));
         }
     }
